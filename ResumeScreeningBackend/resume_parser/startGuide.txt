@@ -1,0 +1,8 @@
+---Activate virtual environment
+venv\Scripts\activate
+
+---Run fastapi
+uvicorn main:app --reload
+
+---Install aii dependancies
+pip install -r requirements.txt
