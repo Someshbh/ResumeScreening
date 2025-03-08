@@ -43,7 +43,7 @@ Ensure you have the following installed on your system:
 Clone the project repository using the following command:
 
 ```bash
-git clone https://github.com/your-repository/resume-screening.git
+git clone https://github.com/Someshbh/ResumeScreening.git
 cd resume-screening
 ```
 
