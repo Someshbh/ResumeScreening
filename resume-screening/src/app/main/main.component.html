@@ -1,0 +1,398 @@
+<!-- Navbar Section -->
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <i class="fas fa-file-search me-2"></i>Resume Screening
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [class.active]="activeSection === 'jobDescription'"
+            href="#"
+            (click)="showSection('jobDescription')"
+          >
+            <i class="fas fa-search me-1"></i>Search Candidates
+          </a>
+        </li>
+        <li class="nav-item">
+          <a 
+            class="nav-link" 
+            [class.active]="activeSection === 'details'"
+            href="#" 
+            (click)="showSection('details')"
+          >
+            <i class="fas fa-list-alt me-1"></i>Results
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid py-3">
+  <!-- Job Description Section -->
+  <div
+    class="job-description-container"
+    *ngIf="activeSection === 'jobDescription'"
+    [@fadeInOut]
+  >
+    <h2>Job Description</h2>
+
+    <!-- Job Title -->
+    <div class="form-group">
+      <label for="jobTitle">
+        <i class="fas fa-briefcase me-2"></i>Job Title
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        id="jobTitle"
+        placeholder="Enter job title"
+        [(ngModel)]="jobDescription.jobTitle"
+      />
+    </div>
+
+    <!-- Experience -->
+    <div class="form-group experience-row">
+      <div class="experience-field">
+        <label for="minimunExperience">
+          <i class="fas fa-clock me-2"></i>Minimum Experience (Years)
+        </label>
+        <input
+          type="number"
+          class="form-control"
+          id="minimunExperience"
+          placeholder="Enter minimum years of experience"
+          [(ngModel)]="jobDescription.minExperience"
+          min="0"
+        />
+      </div>
+    </div>
+
+    <!-- Qualification -->
+    <div class="form-group">
+      <label for="qualification">
+        <i class="fas fa-graduation-cap me-2"></i>Qualification
+      </label>
+      <input
+        type="text"
+        class="form-control"
+        id="qualification"
+        placeholder="Enter required qualification"
+        [(ngModel)]="jobDescription.qualification"
+      />
+    </div>
+
+    <!-- Required Skills -->
+    <div class="form-group">
+      <label for="skills">
+        <i class="fas fa-tools me-2"></i>Required Skills
+      </label>
+      <textarea
+        class="form-control"
+        id="skills"
+        rows="3"
+        placeholder="Enter required skills (comma separated)"
+        [(ngModel)]="jobDescription.requiredSkills"
+      ></textarea>
+      <small class="text-muted">Separate multiple skills with commas</small>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label for="description">
+        <i class="fas fa-align-left me-2"></i>Job Description
+      </label>
+      <textarea
+        class="form-control"
+        id="description"
+        rows="4"
+        placeholder="Enter detailed job description"
+        [(ngModel)]="jobDescription.description"
+      ></textarea>
+    </div>
+
+    <!-- Upload Resume -->
+    <div class="form-group">
+      <label for="resumeUpload">
+        <i class="fas fa-file-upload me-2"></i>Upload Resumes
+      </label>
+      <div class="upload-zone">
+        <input
+          type="file"
+          class="form-control"
+          id="resumeUpload"
+          multiple
+          accept=".pdf"
+          (change)="onFileSelected($event)"
+        />
+        <small class="text-muted d-block mt-2">
+          <i class="fas fa-info-circle me-1"></i>
+          Accepted format: PDF only (Maximum 10 files)
+        </small>
+      </div>
+    </div>
+
+    <!-- Display Uploaded Resumes -->
+    <div class="uploaded-files" *ngIf="jobDescription.resumes.length > 0">
+      <h5>
+        <i class="fas fa-file-alt me-2"></i>Uploaded Resumes
+        <span class="badge bg-primary ms-2">{{ jobDescription.resumes.length }}/10</span>
+      </h5>
+      <ul>
+        <li *ngFor="let file of jobDescription.resumes; let i = index">
+          <span>
+            <i class="fas fa-file-pdf me-2"></i>{{ file.name }}
+          </span>
+          <button class="delete-btn" (click)="removeResume(i)" title="Remove file">
+            <i class="fas fa-trash-alt me-2"></i>Remove
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="button-group">
+      <button 
+        type="button" 
+        class="btn btn-clear" 
+        (click)="clearForm()"
+      >
+        <i class="fas fa-times me-2"></i>Clear Form
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-submit" 
+        (click)="submitJobDescription()"
+        [disabled]="!isFormValid()"
+      >
+        <i class="fas fa-paper-plane me-2"></i>Submit
+      </button>
+    </div>
+  </div>
+
+  <!-- Details Section -->
+  <div *ngIf="activeSection === 'details'" [@fadeInOut]>
+    <div class="section-header">
+      <button class="btn-back" (click)="showSection('jobDescription')">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Search</span>
+      </button>
+    </div>
+    <div class="job-details-container">
+      <h2>
+        <i class="fas fa-info-circle me-2"></i>Job Details
+      </h2>
+      <ul>
+        <li>
+          <strong><i class="fas fa-briefcase me-2"></i>Job Title:</strong>
+          {{ jobDescription.jobTitle }}
+        </li>
+        <li>
+          <strong><i class="fas fa-clock me-2"></i>Experience:</strong>
+          {{ jobDescription.minExperience }} years
+        </li>
+        <li>
+          <strong><i class="fas fa-graduation-cap me-2"></i>Qualification:</strong>
+          {{ jobDescription.qualification }}
+        </li>
+        <li>
+          <strong><i class="fas fa-tools me-2"></i>Required Skills:</strong>
+          {{ jobDescription.requiredSkills }}
+        </li>
+        <li>
+          <strong><i class="fas fa-align-left me-2"></i>Description:</strong>
+          {{ jobDescription.description }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Candidate List -->
+    <div class="candidate-list-container">
+      <h2>
+        <i class="fas fa-users me-2"></i>Shortlisted Candidates
+        <span class="badge bg-primary">{{ filteredCandidates.length }} Found</span>
+      </h2>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 12%">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-user"></i>
+                  <span>Candidate Name</span>
+                </div>
+              </th>
+              <th scope="col" style="width: 8%">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-chart-pie"></i>
+                  <span>Match Score</span>
+                </div>
+              </th>
+              <th scope="col" style="width: 12%">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>Missing Skills</span>
+                </div>
+              </th>
+              <th scope="col" style="width: 15%">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Candidate Skills</span>
+                </div>
+              </th>
+              <th scope="col" style="width: 8%">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-briefcase"></i>
+                  <span>Experience</span>
+                </div>
+              </th>
+              <th scope="col" style="width: 35%">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-file-alt"></i>
+                  <span>Experience Summary</span>
+                </div>
+              </th>
+              <th scope="col" style="width: 10%">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-address-card"></i>
+                  <span>Contact Info</span>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let candidate of filteredCandidates">
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="candidate-avatar me-2">
+                    <i class="fas fa-user-circle fa-2x text-secondary"></i>
+                  </div>
+                  <div class="candidate-name">{{ candidate.candidateName }}</div>
+                </div>
+              </td>
+              <td>
+                <div class="progress" style="height: 8px;">
+                  <div
+                    class="progress-bar"
+                    [style.width.%]="candidate.matchingPercentage"
+                    [class.bg-success]="candidate.matchingPercentage >= 80"
+                    [class.bg-warning]="candidate.matchingPercentage >= 60 && candidate.matchingPercentage < 80"
+                    [class.bg-danger]="candidate.matchingPercentage < 60"
+                    [style.min-width.px]="candidate.matchingPercentage > 0 ? 10 : 0"
+                  ></div>
+                </div>
+                <small class="d-block text-center mt-1" [class.text-danger]="candidate.matchingPercentage < 60">
+                  {{ candidate.matchingPercentage }}%
+                </small>
+              </td>
+              <td>
+                <div [class.expanded]="candidate.isMissingSkillsExpanded">
+                  <span
+                    *ngIf="candidate.missingSkills && candidate.missingSkills.length > 0; else noMissing"
+                    class="badge"
+                    [class.bg-warning]="candidate.missingSkills.length > 0"
+                    [class.text-dark]="candidate.missingSkills.length > 0"
+                  >
+                    {{ candidate.missingSkills.join(", ") }}
+                  </span>
+                  <ng-template #noMissing>
+                    <span class="badge bg-success">All Skills Match</span>
+                  </ng-template>
+                </div>
+                <button 
+                  *ngIf="candidate.missingSkills && candidate.missingSkills.length > 2"
+                  class="read-more-btn" 
+                  [class.expanded]="candidate.isMissingSkillsExpanded"
+                  (click)="toggleMissingSkillsExpand(candidate)"
+                >
+                  <span>{{ candidate.isMissingSkillsExpanded ? 'Show Less' : 'Read More' }}</span>
+                  <i class="fas" [class.fa-chevron-down]="!candidate.isMissingSkillsExpanded" [class.fa-chevron-up]="candidate.isMissingSkillsExpanded"></i>
+                </button>
+              </td>
+              <td>
+                <div class="skills-container" [class.expanded]="candidate.isSkillsExpanded">
+                  <span
+                    *ngFor="let skill of candidate.candidateSkills"
+                    class="badge bg-info text-white"
+                  >
+                    {{ skill }}
+                  </span>
+                  <span
+                    *ngIf="!candidate.candidateSkills?.length"
+                    class="badge bg-secondary"
+                  >
+                    None
+                  </span>
+                </div>
+                <button 
+                  *ngIf="candidate.candidateSkills && candidate.candidateSkills.length > 3"
+                  class="read-more-btn" 
+                  [class.expanded]="candidate.isSkillsExpanded"
+                  (click)="toggleSkillsExpand(candidate)"
+                >
+                  <span>{{ candidate.isSkillsExpanded ? 'Show Less' : 'Read More' }}</span>
+                  <i class="fas" [class.fa-chevron-down]="!candidate.isSkillsExpanded" [class.fa-chevron-up]="candidate.isSkillsExpanded"></i>
+                </button>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-info">
+                  {{ candidate.totalYearsOfExperience }} years
+                </span>
+              </td>
+              <td>
+                <p [class.expanded]="candidate.isExpanded">{{ candidate.experienceSummary }}</p>
+                <button 
+                  *ngIf="candidate.experienceSummary && candidate.experienceSummary.length > 150"
+                  class="read-more-btn" 
+                  [class.expanded]="candidate.isExpanded"
+                  (click)="toggleExpand(candidate)"
+                >
+                  <span>{{ candidate.isExpanded ? 'Show Less' : 'Read More' }}</span>
+                  <i class="fas" [class.fa-chevron-down]="!candidate.isExpanded" [class.fa-chevron-up]="candidate.isExpanded"></i>
+                </button>
+              </td>
+              <td>
+                <div class="contact-info">
+                  <div class="contact-item">
+                    <i class="fas fa-envelope text-secondary me-2"></i>
+                    <a [href]="'mailto:' + candidate.candidateEmail">
+                      {{ candidate.candidateEmail }}
+                    </a>
+                  </div>
+                  <div class="contact-item mt-1">
+                    <i class="fas fa-phone text-secondary me-2"></i>
+                    <a [href]="'tel:' + candidate.candidateMobile">
+                      {{ candidate.candidateMobile }}
+                    </a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loader Overlay -->
+<div class="loader-overlay" *ngIf="isLoading">
+  <div class="loader"></div>
+  <p class="mt-3">Processing resumes...</p>
+</div>
